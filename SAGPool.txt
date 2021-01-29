@@ -1,0 +1,19 @@
+SAGPool
+
+1）
+graph pooling
+
+方法：注意力机制
+链接：https://arxiv.org/pdf/1904.08082.pdf
+引入注意力机制从而对图的关键点进行保留实现池化(生成对图的mask)
+利用一个输出为1维的GCN对图的节点进行打分，每次保留top-k个节点
+
+2)
+readout 层
+对输出的图的特征矩阵进行aggregate (concatenate)从而实现固定大小输出，通过全局池化将各个图降维到同一维度即可
+方法分别为global max pool 和 global average pool 并将两种输出的结果拼接
+进而可以通过mlp+softmax进行分类
+
+可以通过graph pooling 与 readout 实现对整张图的分类
+
+Graph--> GCN --> pooling --> GCN --> pooling --> Readout --> mlp --> softmax
