@@ -10,9 +10,12 @@ graph pooling
 
 2)
 readout 层
-对输出的图的特征矩阵进行aggregate (concatenate)从而实现固定大小输出，通过全局池化将各个图降维到同一维度即可
-方法分别为global max pool 和 global average pool 并将两种输出的结果拼接
-进而可以通过mlp+softmax进行分类
+对输出的图的特征矩阵进行aggregate从而实现固定大小输出，通过全局池化将各个图降维到同一维度
+方法分别为global max pool 和 global average pool 对图中所有节点进行global pooling(融合全部节点的结果)压缩为统一维度,
+并将两种输出的结果拼接
+从而实现对任意一个图输出一个固定大小的矩阵
+
+输出矩阵进而可以通过mlp+softmax进行分类
 
 可以通过graph pooling 与 readout 实现对整张图的分类
 
