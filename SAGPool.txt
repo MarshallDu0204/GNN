@@ -15,6 +15,10 @@ readout 层
 并将两种输出的结果拼接
 从而实现对任意一个图输出一个固定大小的矩阵
 
+在提供的D&D数据集中总共有1178张图，总共334925个node, 作者提供了一张334925*334925的ajency matrix，
+并提供了一个(334925,)的graph indicator，形式为[0 0 0 ....1177 1177 1177] 从而可以借助graph indicator 实现从
+总的ajency matrix 中提取出单个的图 并依照graph indicator对单个图的所有节点进行global pooling 压缩单图中所有节点信息
+
 输出矩阵进而可以通过mlp+softmax进行分类
 
 可以通过graph pooling 与 readout 实现对整张图的分类
