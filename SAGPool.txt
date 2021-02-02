@@ -1,12 +1,20 @@
 SAGPool
 
+数据预处理：
+normalization
+L=D^-0.5 * (A+I) * D^-0.5
+作用: 增加节点本身的影响以及normalization
+
 1）
 graph pooling
 
 方法：注意力机制
 链接：https://arxiv.org/pdf/1904.08082.pdf
 引入注意力机制从而对图的关键点进行保留实现池化(生成对图的mask)
-利用一个输出为1维的GCN对图的节点进行打分，每次保留top-k个节点
+运算逻辑：
+Graph 经过三次GCN运算后 有邻接矩阵以及节点特征
+graph pooling层 邻接矩阵，节点特征作为输入，输出一个(node_num,1) 1维的节点特征向量作为attention-mask
+利用attention-mask图的节点进行打分，对原图进行pooling操作，每次保留top-k个节点
 
 2)
 readout 层

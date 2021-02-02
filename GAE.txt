@@ -1,0 +1,53 @@
+Graph AutoEncoder (GAE)
+
+Paper: https://arxiv.org/pdf/1706.02263.pdf
+
+For recommender system
+
+数据集: mk-100k 943 user 1682 movies 100,000 ratings
+
+数据预处理
+用户对电影的打分为1-5分
+将1-5分分别产生5个邻接矩阵对应分数 （邻接矩阵为稀疏表达形式）
+对邻接矩阵进行global symmetric normalize 预处理
+临界矩阵分为用户-->电影与电影-->用户两种
+
+对用户和电影的feature 进行one-hot 编码
+编码后user feature matrix (943*2625)
+movie feature matrix(1682*2625)
+
+
+网络结构：
+Stack GCN
+Fully Connect(dense1)
+Fully Connect(dense2)
+Decoder
+
+Stack GCN:
+输入: 5张用户对电影的邻接矩阵，5张电影对用户的临界矩阵，以及用户，电影 feature的one-hot 编码
+Stack GCN 有5个weight, 分别对应5档评分，分别对每档评分对应的邻接矩阵进行GCN运算， 对于单档评分运算与GCN一致(单档评分进行两次GCN)
+对于每档评分的user-->movie 临界矩阵会与movie feature 进行GCN运算 
+movie-->user的邻接矩阵与user feature 进行GCN运算
+
+输出为卷积后的用户与电影的feature,对5档评分输出的结果进行了拼接(5组用户与电影的featrue)
+可增加bias运算
+
+代码中Stack GCN只有一层(进行一次卷积) 因为图中(邻接矩阵)只有user-->movie 或 movie-->user 一层连接
+
+接下类利用了dense1 对未经one-hot编码的user 以及movie的特征进行fully connect 运算(可加bias)
+
+dense2层的输入为dense1层的输出与Stack GCN的输出 (拼接卷积后与未经卷积user 与 movie 特征的结果)
+并进行fully connect 运算(可加bias)
+
+Decoder层:
+输入：dense2 层的输出
+计算: 将user feature 与 movie feature 投射到100,000 ratings 的user 与 movie对应的位置上
+形成100,000 * out_dim 的矩阵 
+将投射过的user feature dot weight, 并将结果 *(星乘) 投射过的movie feature
+
+weight可以有多个(1-numclass) 因为用户与电影不一定会有相同数量的ratings，增加weight的数量可以解决此类问题
+多个weight的计算步骤为多次 46行的计算(对不同的weight)并拼接
+
+形成100,000 * 75的矩阵
+在经过一个Dense运算
+形成100,000 * num_class的结果
